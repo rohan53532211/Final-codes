@@ -14,6 +14,7 @@ router.get("/", protect, allowRoles("manager"), studentController.getAllStudents
 
 router.put("/approve/:rollNo", protect, allowRoles("manager"), studentController.approveStudent);
 router.put("/reject/:rollNo", protect, allowRoles("manager"), studentController.rejectStudent);
+router.put("/toggle-status/:rollNo", protect, allowRoles("manager"), studentController.toggleMessStatus);
 router.delete("/:rollNo", protect, allowRoles("manager"), studentController.deleteStudent);
 
 module.exports = router;

@@ -1,3 +1,4 @@
+/** Student Model with facephoto (lowercase) field mapping */
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
@@ -7,10 +8,10 @@ const Student = sequelize.define('Student', {
         primaryKey: true,
         allowNull: false
     },
-    id_key: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        unique: true
+    facePhoto: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'facephoto'
     },
     
     name: {
@@ -38,6 +39,10 @@ const Student = sequelize.define('Student', {
     status: {
         type: DataTypes.ENUM('Pending', 'Approved', 'Rejected'),
         defaultValue: 'Pending'
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, { timestamps: true });
 

@@ -17,8 +17,8 @@ router.post("/login-face", authController.loginFace);
 // change password
 router.put("/change-password", protect, authController.changePassword);
 
-// face register (must be authenticated so we know whose face to train)
-router.post("/register-face", protect, authController.registerFace);
+// update face photo (student only)
+router.post("/update-face-photo", protect, authController.updateFacePhoto);
 
 // profile
 router.get("/profile", protect, authController.getProfile);

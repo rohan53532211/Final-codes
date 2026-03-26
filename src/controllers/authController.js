@@ -17,7 +17,7 @@ const generateToken = (user, role) => {
 
 exports.registerStudent = async (req, res) => {
   try {
-    const { name, rollNo, email, password, roomNo } = req.body;
+    const { name, rollNo, email, password, roomNo, phone } = req.body;
 
     // optional IITK validation
     if (!email.endsWith("@iitk.ac.in")) {
@@ -35,7 +35,7 @@ exports.registerStudent = async (req, res) => {
 
     otpStore[email] = {
       otp,
-      data: { name, rollNo, email, password: hashedPassword, roomNo },
+      data: { name, rollNo, email, password: hashedPassword, roomNo, phone },
       expires: Date.now() + 5 * 60 * 1000
     };
 
@@ -163,14 +163,33 @@ exports.loginFace = async (req, res) => {
     const { image } = req.body;
     if (!image) return res.status(400).json({ error: "No image received" });
 
-    const pythonResponse = await axios.post('http://localhost:8000/recognize-face/', { image });
+    // Fetch all students who have a face photo registered
+    const students = await Student.findAll({
+        where: { facePhoto: { [require('sequelize').Op.ne]: null } },
+        attributes: ['rollNo', 'facePhoto', 'name', 'status']
+    });
+
+    if (students.length === 0) {
+        return res.status(400).json({ error: "No student face profiles found in database." });
+    }
+
+    // Prepare gallery for comparison
+    const gallery = students.map(s => ({
+        id: s.rollNo,
+        image: s.facePhoto
+    }));
+
+    const pythonResponse = await axios.post('http://localhost:8000/identify-face/', { 
+        probe: image,
+        gallery: gallery
+    });
 
     if (pythonResponse.data.status === "success") {
-        const id_key = parseInt(pythonResponse.data.userId); 
-        const user = await Student.findOne({ where: { id_key } });
+        const rollNo = pythonResponse.data.matchId; 
+        const user = students.find(s => s.rollNo === rollNo);
         
         if (!user) {
-            return res.status(400).json({ error: "Face recognized, but user not found in database. Please register." });
+            return res.status(400).json({ error: "Face recognized, but student record moved. Please login manually." });
         }
 
         if (user.status === "Pending") {
@@ -189,47 +208,25 @@ exports.loginFace = async (req, res) => {
             user: { name: user.name, rollNo: user.rollNo, email: user.email }
         });
     } else {
-        if (pythonResponse.data.status === "noface") {
-            return res.status(400).json({ error: "No face detected in webcam." });
-        } else if (pythonResponse.data.status === "error") {
-            return res.status(500).json({ error: pythonResponse.data.message });
-        } else {
-            return res.status(400).json({ error: "Face not recognized." });
-        }
+        return res.status(400).json({ error: pythonResponse.data.message || "Face not recognized." });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-exports.registerFace = async (req, res) => {
+exports.updateFacePhoto = async (req, res) => {
   try {
-    const { images } = req.body;
-    if (!images || images.length === 0) return res.status(400).json({ error: "No images received" });
-
-    if (req.user.role !== "student") {
-        return res.status(403).json({ error: "Only students can register faces" });
-    }
+    const { image } = req.body;
+    // Optional: allow empty image to clear it
 
     const student = await Student.findByPk(req.user.rollNo);
-    if (!student) {
-        return res.status(500).json({ error: "Student not found." });
-    }
+    if (!student) return res.status(404).json({ error: "Student not found" });
 
-    // Pass the numeric id_key for OpenCV
-    const pythonResponse = await axios.post(`http://localhost:8000/train-new-face/${student.id_key}`, 
-        { images }, 
-        { timeout: 180000 } 
-    );
+    student.facePhoto = image;
+    await student.save();
 
-    if (pythonResponse.data.status === "error") {
-        return res.status(400).json({ error: pythonResponse.data.message });
-    }
-
-    return res.status(201).json({ 
-        message: "Face Registration successful! AI trained.", 
-        status: "registered"
-    });
+    res.json({ message: "Face profile updated successfully!" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

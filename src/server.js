@@ -13,8 +13,8 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log("DB Connected");
 
-    // Standard sync (safe)
-    await sequelize.sync();
+    // Sync with alter: true to handle missing columns
+    await sequelize.sync({ alter: true });
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
