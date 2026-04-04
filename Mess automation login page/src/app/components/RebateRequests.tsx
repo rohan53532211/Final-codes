@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Check, X, Calendar, User } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface RebateRequest {
   id: string;
   studentId: string;
@@ -20,7 +20,7 @@ export function RebateRequests() {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch('http://localhost:5000/api/rebate', {
+      const res = await fetch(`${API_HOST}/api/rebate`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -51,7 +51,7 @@ export function RebateRequests() {
     try {
       const token = localStorage.getItem('token');
       const endpoint = action === 'approved' ? 'approve' : 'reject';
-      const res = await fetch(`http://localhost:5000/api/rebate/${endpoint}/${id}`, {
+      const res = await fetch(`${API_HOST}/api/rebate/${endpoint}/${id}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` }
       });

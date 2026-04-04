@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MessageSquare, Star, Send } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface FeedbackItem {
   id?: string;
   createdAt: string;
@@ -22,7 +22,7 @@ export function Feedback() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/feedback/my', {
+        const res = await fetch(`${API_HOST}/api/feedback/my`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -47,7 +47,7 @@ export function Feedback() {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/feedback', {
+      const res = await fetch(`${API_HOST}/api/feedback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

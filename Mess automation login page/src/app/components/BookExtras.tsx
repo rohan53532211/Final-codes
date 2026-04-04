@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ShoppingCart, Plus, Minus, Calendar } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface ExtraItem {
   id: string;
   name: string;
@@ -32,7 +32,7 @@ export function BookExtras() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/extras', {
+        const res = await fetch(`${API_HOST}/api/extras`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -61,7 +61,7 @@ export function BookExtras() {
   const fetchMyBookings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/pre-booking/my', {
+      const res = await fetch(`${API_HOST}/api/pre-booking/my`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) setMyBookings(await res.json());
@@ -72,7 +72,7 @@ export function BookExtras() {
     const fetchSpecialItems = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:5000/api/special-items/available', {
+        const res = await fetch(`${API_HOST}/api/special-items/available`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -142,7 +142,7 @@ export function BookExtras() {
         quantity
       }));
 
-      const res = await fetch('http://localhost:5000/api/extras/buy', {
+      const res = await fetch(`${API_HOST}/api/extras/buy`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ export function BookExtras() {
     try {
       const token = localStorage.getItem('token');
       for (const item of itemsToBook) {
-        await fetch('http://localhost:5000/api/pre-booking', {
+        await fetch(`${API_HOST}/api/pre-booking`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Save, X } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface MenuItem {
   id: string;
   name: string;
@@ -44,7 +44,7 @@ export function MenuManagement() {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch('http://localhost:5000/api/menu', {
+      const res = await fetch(`${API_HOST}/api/menu`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -72,7 +72,7 @@ export function MenuManagement() {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch('http://localhost:5000/api/extras', {
+      const res = await fetch(`${API_HOST}/api/extras`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -96,7 +96,7 @@ export function MenuManagement() {
       const token = localStorage.getItem('token');
       const date = new Date();
       const configKey = `BDMR_${date.getFullYear()}_${date.getMonth() + 1}`;
-      const res = await fetch(`http://localhost:5000/api/config/${configKey}`, {
+      const res = await fetch(`${API_HOST}/api/config/${configKey}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -109,7 +109,7 @@ export function MenuManagement() {
   const fetchSpecialItems = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/special-items/available', {
+      const res = await fetch(`${API_HOST}/api/special-items/available`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) setSpecialItems(await res.json());
@@ -135,7 +135,7 @@ export function MenuManagement() {
         }
       };
       
-      const res = await fetch(`http://localhost:5000/api/menu/day/${day}`, {
+      const res = await fetch(`${API_HOST}/api/menu/day/${day}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -245,7 +245,7 @@ export function MenuManagement() {
   const toggleStatus = async (id: string, currentStatus: boolean) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/extras/update/${id}`, {
+      const res = await fetch(`${API_HOST}/api/extras/update/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ isAvailable: !currentStatus })
@@ -257,7 +257,7 @@ export function MenuManagement() {
   const fetchBookings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/pre-booking', {
+      const res = await fetch(`${API_HOST}/api/pre-booking`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -271,7 +271,7 @@ export function MenuManagement() {
     if (!newSpecialName || !newSpecialPrice) return alert("Please enter name and price");
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/special-items', {
+      const res = await fetch(`${API_HOST}/api/special-items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ 
@@ -294,7 +294,7 @@ export function MenuManagement() {
       const token = localStorage.getItem('token');
       const date = new Date();
       const configKey = `BDMR_${date.getFullYear()}_${date.getMonth() + 1}`;
-      const res = await fetch('http://localhost:5000/api/config', {
+      const res = await fetch(`${API_HOST}/api/config`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ key: configKey, value: bdmr })
@@ -346,7 +346,7 @@ export function MenuManagement() {
                     <button 
                       onClick={async () => {
                         const token = localStorage.getItem('token');
-                        await fetch(`http://localhost:5000/api/special-items/${item.id}`, { 
+                        await fetch(`${API_HOST}/api/special-items/${item.id}`, { 
                            method: 'DELETE',
                            headers: { Authorization: `Bearer ${token}` }
                         });
@@ -457,7 +457,7 @@ export function MenuManagement() {
               <button 
                 onClick={async () => {
                     const token = localStorage.getItem('token');
-                    await fetch('http://localhost:5000/api/extras/add', {
+                    await fetch(`${API_HOST}/api/extras/add`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                         body: JSON.stringify({ name: newItemName, price: newItemPrice, mealType: newItemCategory, day: 'All' })
@@ -507,7 +507,7 @@ export function MenuManagement() {
                         <button 
                           onClick={async () => {
                             const token = localStorage.getItem('token');
-                            await fetch(`http://localhost:5000/api/extras/delete/${item.id}`, { 
+                            await fetch(`${API_HOST}/api/extras/delete/${item.id}`, { 
                                method: 'DELETE',
                                headers: { Authorization: `Bearer ${token}` }
                             });

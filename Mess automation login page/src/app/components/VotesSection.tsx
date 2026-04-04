@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BarChart3 } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface PollOption {
   id: number;
   name: string;
@@ -26,7 +26,7 @@ export function VotesSection() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/poll', {
+        const res = await fetch(`${API_HOST}/api/poll`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

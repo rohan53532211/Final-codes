@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import Webcam from 'react-webcam'; 
-
+import Webcam from 'react-webcam';
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 const logo = "https://upload.wikimedia.org/wikipedia/en/thumb/a/a3/IIT_Kanpur_Logo.svg/120px-IIT_Kanpur_Logo.svg.png";
 const campusImage = "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1000&auto=format&fit=crop";
 
@@ -68,7 +68,7 @@ export function LoginForm() {
   const handleLogin = async () => {
     if (authMethod === 'password') {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/login', {
+        const response = await fetch(`${API_HOST}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password, role }),
@@ -94,7 +94,7 @@ export function LoginForm() {
       }
 
       try {
-        const response = await fetch('http://localhost:5000/api/auth/login-face', {
+        const response = await fetch(`${API_HOST}/api/auth/login-face`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image: imageSrc }),
@@ -124,7 +124,7 @@ export function LoginForm() {
     if (!showOtpInput) {
       // Step 1: Send registration details and get OTP
       try {
-        const response = await fetch('http://localhost:5000/api/auth/register', {
+        const response = await fetch(`${API_HOST}/api/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, rollNo, email, password, roomNo, phone }),
@@ -143,7 +143,7 @@ export function LoginForm() {
     } else {
       // Step 2: Verify OTP
       try {
-        const response = await fetch('http://localhost:5000/api/auth/verify-otp', {
+        const response = await fetch(`${API_HOST}/api/auth/verify-otp`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, otp }),
@@ -176,7 +176,7 @@ export function LoginForm() {
         alert("Please enter your email");
         return;
       }
-      const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      const response = await fetch(`${API_HOST}/api/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, role }),
@@ -199,7 +199,7 @@ export function LoginForm() {
         alert("Please enter OTP and new password.");
         return;
       }
-      const response = await fetch('http://localhost:5000/api/auth/reset-password', {
+      const response = await fetch(`${API_HOST}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp, newPassword }),

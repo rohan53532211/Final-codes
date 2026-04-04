@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ThumbsUp, Clock, CheckCircle2 } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface PollOption {
   id: number;
   name: string;
@@ -29,7 +29,7 @@ export function Vote() {
         const token = localStorage.getItem('token');
         if (!token) return;
         
-        const res = await fetch('http://localhost:5000/api/poll', {
+        const res = await fetch(`${API_HOST}/api/poll`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) return;
@@ -37,7 +37,7 @@ export function Vote() {
         const pollsData = await res.json();
         setPolls(pollsData);
 
-        const myRes = await fetch('http://localhost:5000/api/poll/my', {
+        const myRes = await fetch(`${API_HOST}/api/poll/my`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (myRes.ok) {
@@ -92,7 +92,7 @@ export function Vote() {
         return;
       }
 
-      const res = await fetch('http://localhost:5000/api/poll/vote', {
+      const res = await fetch(`${API_HOST}/api/poll/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ pollId, votes: pollSelections })

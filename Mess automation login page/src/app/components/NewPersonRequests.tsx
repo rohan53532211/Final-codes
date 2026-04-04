@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Check, X, User, Mail, Phone } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface PersonRequest {
   id: string;
   name: string;
@@ -20,7 +20,7 @@ export function NewPersonRequests() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/students/pending', {
+        const res = await fetch(`${API_HOST}/api/students/pending`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
@@ -49,7 +49,7 @@ export function NewPersonRequests() {
     try {
       const token = localStorage.getItem('token');
       const endpoint = action === 'approved' ? 'approve' : 'reject';
-      const res = await fetch(`http://localhost:5000/api/students/${endpoint}/${id}`, {
+      const res = await fetch(`${API_HOST}/api/students/${endpoint}/${id}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` }
       });

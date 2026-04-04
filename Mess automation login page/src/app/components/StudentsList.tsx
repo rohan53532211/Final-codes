@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Download, Trash2 } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface Student {
   id: string;
   name: string;
@@ -22,7 +22,7 @@ export function StudentsList() {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch('http://localhost:5000/api/students', {
+      const res = await fetch(`${API_HOST}/api/students`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -52,7 +52,7 @@ export function StudentsList() {
   const toggleStatus = async (rollNo: string) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/students/toggle-status/${rollNo}`, {
+      const res = await fetch(`${API_HOST}/api/students/toggle-status/${rollNo}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -72,7 +72,7 @@ export function StudentsList() {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/students/${rollNo}`, {
+      const res = await fetch(`${API_HOST}/api/students/${rollNo}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

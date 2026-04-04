@@ -1,7 +1,7 @@
 import { User, Mail, Building, Camera, CheckCircle, XCircle, Phone, Edit2, Save, X } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import Webcam from 'react-webcam';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 export function Profile() {
   const [studentData, setStudentData] = useState({
     name: 'Loading...',
@@ -27,7 +27,7 @@ export function Profile() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/auth/profile', {
+        const res = await fetch(`${API_HOST}/api/auth/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -56,7 +56,7 @@ export function Profile() {
     try {
       setIsSaving(true);
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/auth/profile', {
+      const res = await fetch(`${API_HOST}/api/auth/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ export function Profile() {
     setIsUploading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/auth/update-face-photo', {
+      const res = await fetch(`${API_HOST}/api/auth/update-face-photo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

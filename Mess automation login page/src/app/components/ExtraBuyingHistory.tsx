@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Download, TrendingUp } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface Purchase {
   id: string;
   studentId: string;
@@ -19,7 +19,7 @@ export function ExtraBuyingHistory() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/extras/analytics', {
+        const res = await fetch(`${API_HOST}/api/extras/analytics`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

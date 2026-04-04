@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Play, Square, BarChart3, Trash2 } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface PollOption {
   id: number;
   name: string;
@@ -32,7 +32,7 @@ export function PollManagement() {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch('http://localhost:5000/api/poll', {
+      const res = await fetch(`${API_HOST}/api/poll`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -58,7 +58,7 @@ export function PollManagement() {
       if (newLunch.trim()) options.Lunch = newLunch.split('\n').map(s => s.trim()).filter(Boolean);
       if (newDinner.trim()) options.Dinner = newDinner.split('\n').map(s => s.trim()).filter(Boolean);
 
-      const res = await fetch('http://localhost:5000/api/poll/create', {
+      const res = await fetch(`${API_HOST}/api/poll/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ title: newTitle, description: newDesc, options })
@@ -82,7 +82,7 @@ export function PollManagement() {
   const startPoll = async (id: number) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/poll/start/${id}`, {
+      const res = await fetch(`${API_HOST}/api/poll/start/${id}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -93,7 +93,7 @@ export function PollManagement() {
   const endPoll = async (id: number) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/poll/end/${id}`, {
+      const res = await fetch(`${API_HOST}/api/poll/end/${id}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -105,7 +105,7 @@ export function PollManagement() {
     if (!window.confirm('Are you sure you want to delete this poll? This action cannot be undone.')) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/poll/${id}`, {
+      const res = await fetch(`${API_HOST}/api/poll/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

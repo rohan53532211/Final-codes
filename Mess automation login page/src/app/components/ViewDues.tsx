@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, IndianRupee, ShoppingBag } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface Transaction {
   id: string;
   date: string;
@@ -21,7 +21,7 @@ export function ViewDues() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/extras/my', {
+        const res = await fetch(`${API_HOST}/api/extras/my`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

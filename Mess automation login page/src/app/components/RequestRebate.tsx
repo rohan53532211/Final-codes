@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, AlertCircle, Trash2 } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface RebateRequest {
   id?: string;
   startDate: string;
@@ -23,7 +23,7 @@ export function RequestRebate() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/rebate/my', {
+        const res = await fetch(`${API_HOST}/api/rebate/my`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -61,7 +61,7 @@ export function RequestRebate() {
     try {
       setIsSubmitting(true);
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/rebate', {
+      const res = await fetch(`${API_HOST}/api/rebate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export function RequestRebate() {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/rebate/${id}`, {
+      const res = await fetch(`${API_HOST}/api/rebate/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

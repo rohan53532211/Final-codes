@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Coffee, UtensilsCrossed, Moon } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 export function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [todayMenu, setTodayMenu] = useState<{ breakfast: string[]; lunch: string[]; dinner: string[] }>({
@@ -23,7 +23,7 @@ export function Dashboard() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/menu/today', {
+        const res = await fetch(`${API_HOST}/api/menu/today`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -43,7 +43,7 @@ export function Dashboard() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/extras/my', {
+        const res = await fetch(`${API_HOST}/api/extras/my`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -61,7 +61,7 @@ export function Dashboard() {
         if (!token) return;
         const date = new Date();
         const configKey = `BDMR_${date.getFullYear()}_${date.getMonth() + 1}`;
-        const res = await fetch(`http://localhost:5000/api/config/${configKey}`, {
+        const res = await fetch(`${API_HOST}/api/config/${configKey}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

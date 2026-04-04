@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Star, MessageSquare, TrendingUp, TrendingDown } from 'lucide-react';
-
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
 interface Feedback {
   id: string;
   studentId: string;
@@ -20,7 +20,7 @@ export function FeedbackSection() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('http://localhost:5000/api/feedback', {
+        const res = await fetch(`${API_HOST}/api/feedback`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
