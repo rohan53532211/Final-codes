@@ -4,7 +4,8 @@ const Student = require("../models/Student");
 const MessManager = require("../models/MessManager");
 const { sendOTPEmail } = require("../utils/mailer");
 const axios = require("axios");
-
+require("dotenv").config();
+const API_FACE = process.env.VITE_API_FACE || 'http://localhost:8000';
 const otpStore = {};
 
 const generateToken = (user, role) => {
@@ -179,7 +180,7 @@ exports.loginFace = async (req, res) => {
         image: s.facePhoto
     }));
 
-    const pythonResponse = await axios.post('http://localhost:8000/identify-face/', { 
+    const pythonResponse = await axios.post(`${API_FACE}/identify-face/`, { 
         probe: image,
         gallery: gallery
     });
