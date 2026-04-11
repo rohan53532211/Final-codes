@@ -151,14 +151,15 @@ export function StudentsList() {
           <table className="w-full">
             <thead className="bg-black text-white">
               <tr>
-                <th className="px-4 py-3 text-left">Roll Number</th>
+                <th className="px-2 py-3 text-left">Roll Number</th>
                 <th className="px-4 py-3 text-left">Name</th>
-                <th className="px-4 py-3 text-left">Room</th>
+                <th className="px-2 py-3 text-left">Room</th>
                 <th className="px-4 py-3 text-left">Email</th>
-                <th className="px-4 py-3 text-left">Face ID</th>
+                <th className="px-3 py-3 text-left">Phone</th>
+                <th className="px-2 py-3 text-left">Face ID</th>
                 <th className="px-4 py-3 text-left">Status</th>
                 <th className="px-4 py-3 text-left">Join Date</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th className="px-4 py-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -169,9 +170,10 @@ export function StudentsList() {
                 >
                   <td className="px-4 py-3 font-medium">{student.rollNumber}</td>
                   <td className="px-4 py-3">{student.name}</td>
-                  <td className="px-4 py-3">{student.room}</td>
+                  <td className="px-2 py-3">{student.room}</td>
                   <td className="px-4 py-3 text-sm">{student.email}</td>
-                  <td className="px-4 py-3 text-sm text-center">
+                  <td className="px-3 py-3 text-sm">{student.phone}</td>
+                  <td className="px-2 py-3 text-sm text-center">
                     {student.hasFaceId ? '✅' : '❌'}
                   </td>
                   <td className="px-4 py-3">
