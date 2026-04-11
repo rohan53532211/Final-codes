@@ -1,4 +1,4 @@
-import { User, Mail, Building, Camera, CheckCircle, XCircle, Phone, Edit2, Save, X } from 'lucide-react';
+import { User, Mail, Building, Camera, CheckCircle, XCircle, Phone, Edit2, Save, X, Lock } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import Webcam from 'react-webcam';
 const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
@@ -22,6 +22,16 @@ export function Profile() {
   const [isUploading, setIsUploading] = useState(false);
   const webcamRef = useRef<Webcam>(null);
 
+    // New states for change password
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [changePasswordData, setChangePasswordData] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [changePasswordError, setChangePasswordError] = useState('');
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -38,8 +48,8 @@ export function Profile() {
             name: data.name,
             rollNumber: data.rollNo,
             email: data.email,
-            room: data.roomNo || 'Not Assigned',
-            phone: data.phone || '',
+            room: data.roomNo || 'Not provided',
+            phone: data.phone || 'Not provided',
             messCard: data.messCardStatus,
             joinedDate: new Date(data.createdAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }),
             hasFace: !!data.facePhoto
@@ -129,6 +139,55 @@ export function Profile() {
     }
   };
 
+const handleChangePassword = async () => {
+    if (changePasswordData.newPassword !== changePasswordData.confirmPassword) {
+      setChangePasswordError('New passwords do not match');
+      return;
+    }
+    if (!changePasswordData.oldPassword || !changePasswordData.newPassword) {
+      setChangePasswordError('All fields are required');
+      return;
+    }
+
+    setIsChangingPassword(true);
+    setChangePasswordError('');
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_HOST}/api/auth/change-password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+           Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          oldPassword: changePasswordData.oldPassword,
+          newPassword: changePasswordData.newPassword
+        })
+      });
+
+      if (res.ok) {
+        alert('Password changed successfully!');
+        setShowChangePassword(false);
+        setChangePasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+        // Optionally, log out the user or refresh token
+      } else {
+        const err = await res.json();
+        setChangePasswordError(err.error || 'Failed to change password');
+      }
+    } catch (err) {
+      setChangePasswordError('Network error');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  const cancelChangePassword = () => {
+    setShowChangePassword(false);
+    setChangePasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+    setChangePasswordError('');
+  };
+
+
   return (
     <div className="space-y-6">
       <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
@@ -181,12 +240,76 @@ export function Profile() {
               <h3 className="text-2xl font-bold text-gray-800">{studentData.name}</h3>
             )}
             <p className="text-gray-600">Roll No: {studentData.rollNumber}</p>
+            <div className="mt-2 flex items-center space-x-30">
             <span className="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
               Mess Card: {studentData.messCard}
             </span>
+            <button 
+                className="inline-block px-3 py-1 bg-red-100 text-red-800 rounded text-sm font-semibold hover:bg-red-200 transition-colors"
+                onClick={() => setShowChangePassword(true)}
+              >
+                <Lock className="w-4 h-4 inline mr-1" /> Change Password
+              </button>
+            </div>
           </div>
         </div>
 
+{/* Change Password Section */}
+        {showChangePassword && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Change Password</h3>
+            {changePasswordError && (
+              <p className="text-red-600 text-sm mb-4">{changePasswordError}</p>
+            )}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                <input
+                  type="password"
+                  value={changePasswordData.oldPassword}
+                  onChange={e => setChangePasswordData({...changePasswordData, oldPassword: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter current password"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <input
+                  type="password"
+                  value={changePasswordData.newPassword}
+                  onChange={e => setChangePasswordData({...changePasswordData, newPassword: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter new password"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                <input
+                 type="password"
+                  value={changePasswordData.confirmPassword}
+                  onChange={e => setChangePasswordData({...changePasswordData, confirmPassword: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Confirm new password"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleChangePassword}
+                  disabled={isChangingPassword}
+                  className="flex-1 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
+                >
+                  {isChangingPassword ? 'Changing...' : 'Change Password'}
+                </button>
+                <button
+                  onClick={cancelChangePassword}
+                  className="flex-1 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Profile Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
@@ -210,7 +333,7 @@ export function Profile() {
                    placeholder="e.g. F401"
                  />
               ) : (
-                <p className="font-semibold text-gray-800">{studentData.room}</p>
+                <p className="font-semibold text-gray-800">{studentData.room || 'Not provided'}</p>
               )}
             </div>
           </div>
