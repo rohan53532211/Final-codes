@@ -21,6 +21,7 @@ import { ExtraBuyingHistory } from '../components/ExtraBuyingHistory';
 import { MenuManagement } from '../components/MenuManagement';
 import { PollManagement } from '../components/PollManagement';
 import { NewPersonRequests } from '../components/NewPersonRequests';
+import { AnnouncementManagement } from '../components/AnnouncementManagement';
 
 export default function ManagerDashboard() {
   const navigate = useNavigate();
@@ -55,6 +56,7 @@ export default function ManagerDashboard() {
     { id: 'history', label: 'Extra Buying History', icon: ShoppingCart },
     { id: 'menu', label: 'Menu Management', icon: Calendar },
     { id: 'polls', label: 'Poll Management', icon: BarChart3 },
+    { id: 'announcements', label: 'Announcements', icon: MessageSquare },
   ];
 
   const renderContent = () => {
@@ -75,6 +77,8 @@ export default function ManagerDashboard() {
         return <MenuManagement />;
       case 'polls':
         return <PollManagement />;
+      case 'announcements':
+        return <AnnouncementManagement />;
       case 'dashboard':
       default:
         return <DashboardOverview onNavigate={setActiveSection} />;
@@ -204,8 +208,8 @@ function DashboardOverview({ onNavigate }: { onNavigate: (section: string) => vo
           <button onClick={() => onNavigate('polls')} className="border-2 border-black p-4 hover:bg-black hover:text-white transition-colors">
             Create New Poll
           </button>
-          <button onClick={() => onNavigate('feedback')} className="border-2 border-black p-4 hover:bg-black hover:text-white transition-colors">
-            View Feedback
+          <button onClick={() => onNavigate('announcements')} className="border-2 border-black p-4 hover:bg-black hover:text-white transition-colors">
+            Post Notification
           </button>
         </div>
       </div>
