@@ -21,6 +21,11 @@ export function MenuManagement() {
   const [weekMenu, setWeekMenu] = useState<DayMenu[]>([]);
   const [editingVals, setEditingVals] = useState<{ breakfast: string, lunch: string, dinner: string }>({ breakfast: '', lunch: '', dinner: '' });
 
+  // Add Day Form State
+  const [isAddingNewDay, setIsAddingNewDay] = useState(false);
+  const [newDayDateVal, setNewDayDateVal] = useState('');
+  const [newDayMeals, setNewDayMeals] = useState({ breakfast: '', lunch: '', dinner: '' });
+
   // Add Item Form State
   const [showAddItemForm, setShowAddItemForm] = useState(false);
   const [newItemName, setNewItemName] = useState('');
@@ -51,8 +56,11 @@ export function MenuManagement() {
       if (res.ok) {
         const data = await res.json();
         // Convert map to array
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const mapped = days.map(day => {
+        const defaultDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        // Include any additional days from backend data
+        const allDays = Array.from(new Set([...defaultDays, ...Object.keys(data)]));
+        
+        const mapped = allDays.map(day => {
           const dayData = data[day] || {};
           return {
             day,
@@ -66,6 +74,56 @@ export function MenuManagement() {
       }
     } catch (err) {
       console.error('Failed to fetch menus', err);
+    }
+  };
+
+  const handleAddNewDaySave = async () => {
+    if (!newDayDateVal) {
+      return alert("Please select a date first");
+    }
+    
+    // Get the standard weekday name (e.g. "Wednesday") to match backend Enum
+    const dateObj = new Date(newDayDateVal);
+    const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+    
+    // Check if that day's menu is already populated
+    const existingDay = weekMenu.find(m => m.day === dayOfWeek);
+    const isPopulated = existingDay && 
+      (existingDay.breakfast.length > 0 || existingDay.lunch.length > 0 || existingDay.dinner.length > 0);
+      
+    if (isPopulated) {
+      alert("already this is there");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const payload = {
+        meals: {
+          Breakfast: newDayMeals.breakfast.split('\n').map(s => s.trim()).filter(Boolean),
+          Lunch: newDayMeals.lunch.split('\n').map(s => s.trim()).filter(Boolean),
+          Dinner: newDayMeals.dinner.split('\n').map(s => s.trim()).filter(Boolean)
+        }
+      };
+      const res = await fetch(`${API_HOST}/api/menu/day/${dayOfWeek}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        fetchMenu();
+        setIsAddingNewDay(false);
+        setNewDayDateVal('');
+        setNewDayMeals({ breakfast: '', lunch: '', dinner: '' });
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Failed to add day');
+      }
+    } catch (err) {
+      alert('Network error while adding day');
     }
   };
 
@@ -162,10 +220,6 @@ export function MenuManagement() {
     <div className="space-y-4 w-250">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold">Weekly Menu</h3>
-        <button className="flex items-center gap-2 px-4 py-2 border-2 border-black hover:bg-gray-100">
-          <Plus className="w-4 h-4" />
-          Add New Day
-        </button>
       </div>
 
       {weekMenu.map((menu) => (
