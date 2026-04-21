@@ -176,6 +176,7 @@ export function Vote() {
             const grouped = groupByMeal(poll.PollOptions || []);
             const hasVoted = votedPolls.has(poll.id);
             const totalVotes = (poll.PollOptions || []).reduce((s, o) => s + o.votes, 0);
+            const numMeals = Object.keys(grouped).length;
             return (
               <div key={poll.id} className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
                 <div className="flex items-start justify-between mb-4">
@@ -218,7 +219,7 @@ export function Vote() {
                               </div>
                               <span className="font-medium text-gray-800">{opt.name}</span>
                             </div>
-                            {hasVoted && <span className="text-sm text-gray-500">{opt.votes} votes</span>}
+                            {hasVoted && <span className="text-sm text-gray-500">{opt.votes} voters</span>}
                           </div>
                         );
                       })}
@@ -238,7 +239,7 @@ export function Vote() {
                   <ThumbsUp className="w-5 h-5" /> {hasVoted ? 'Update Vote' : 'Submit Vote'}
                 </button>
 
-                <div className="mt-3 text-center text-sm text-gray-500">Total votes: {totalVotes/3}</div>
+                <div className="mt-3 text-center text-sm text-gray-500">Total voters: {totalVotes / numMeals}</div>
               </div>
             );
           })}
@@ -251,17 +252,18 @@ export function Vote() {
           <h3 className="text-xl font-bold">Closed Polls</h3>
           {closedPolls.map(poll => {
             const totalVotes = (poll.PollOptions || []).reduce((s, o) => s + o.votes, 0);
+            const numMeals = new Set(poll.PollOptions.map(o => o.mealType)).size;
             return (
               <div key={poll.id} className="bg-gray-50 border border-gray-300 rounded-lg p-6 opacity-90">
                 <h4 className="text-xl font-bold mb-2">{poll.title}</h4>
                 <p className="text-gray-600 mb-3">{poll.description}</p>
                 <div className="space-y-2">
                   {[...(poll.PollOptions || [])].sort((a, b) => b.votes - a.votes).map(opt => {
-                    const pct = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
+                    const pct = totalVotes > 0 ? Math.round((opt.votes / (totalVotes / numMeals)) * 100) : 0;
                     return (
                       <div key={opt.id} className="flex items-center justify-between p-3 bg-white rounded">
                         <span className="font-medium">[{opt.mealType}] {opt.name}</span>
-                        <span className="text-gray-600">{opt.votes} votes ({pct}%)</span>
+                        <span className="text-gray-600">{opt.votes} voters ({pct}%)</span>
                       </div>
                     );
                   })}

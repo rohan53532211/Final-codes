@@ -84,7 +84,7 @@ export function AnnouncementManagement() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-250">
       <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
         <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-800">
           <Megaphone className="w-6 h-6 text-blue-600" />
