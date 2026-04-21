@@ -8,6 +8,7 @@ import { ViewDues } from '@/app/components/ViewDues';
 import { Vote } from '@/app/components/Vote';
 import { Feedback } from '@/app/components/Feedback';
 import { RequestRebate } from '@/app/components/RequestRebate';
+import { ExtraBuyingHistory } from '@/app/components/ExtraBuyingHistory';
 import logo from '../../assets/IIT_Kanpur_Logo.svg.png';
 
 export default function StudentDashboard() {
@@ -42,6 +43,8 @@ export default function StudentDashboard() {
         return <Feedback />;
       case 'rebate':
         return <RequestRebate />;
+      case 'extra-history':
+        return <ExtraBuyingHistory />;
       default:
         return <Dashboard />;
     }
@@ -125,11 +128,19 @@ export default function StudentDashboard() {
             </button>
             <button
               onClick={() => setActiveTab('rebate')}
-              className={`w-full px-6 py-4 text-left transition-colors font-medium ${
+              className={`w-full px-6 py-4 text-left border-b border-gray-200 transition-colors font-medium ${
                 activeTab === 'rebate' ? 'bg-gray-800 text-white' : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
               Request Rebate
+            </button>
+            <button
+              onClick={() => setActiveTab('extra-history')}
+              className={`w-full px-6 py-4 text-left transition-colors font-medium ${
+                activeTab === 'extra-history' ? 'bg-gray-800 text-white' : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              Extra History
             </button>
           </nav>
         </div>

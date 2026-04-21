@@ -294,9 +294,7 @@ exports.getMyExtras = async (req, res) => {
 exports.getExtrasAnalytics = async (req, res) => {
   try {
     const userRole = req.userRole || (req.user && req.user.role);
-    if (userRole !== "manager") {
-      return res.status(403).json({ error: "Only manager allowed" });
-    }
+    const userId = req.user.rollNo;
 
     const { month, year } = req.query;
     let where = {};
@@ -307,9 +305,15 @@ exports.getExtrasAnalytics = async (req, res) => {
       where.purchaseDate = { [Op.between]: [startDate, endDate] };
     }
 
+    if (userRole === "student") {
+      where.StudentRollNo = userId;
+    } else if (userRole !== "manager") {
+      return res.status(403).json({ error: "Unauthorized access" });
+    }
+
     const purchases = await ExtraPurchase.findAll({
       where,
-      include: [ExtraItem]
+      include: [{ model: ExtraItem }]
     });
 
     let totalRevenue = 0;
@@ -318,7 +322,7 @@ exports.getExtrasAnalytics = async (req, res) => {
     purchases.forEach(p => {
       totalRevenue += parseFloat(p.totalPrice);
 
-      const name = p.ExtraItem.name;
+      const name = p.ExtraItem ? p.ExtraItem.name : "Unknown Item";
 
       if (!itemStats[name]) {
         itemStats[name] = {
@@ -344,9 +348,7 @@ exports.getExtrasAnalytics = async (req, res) => {
 exports.getPurchaseHistory = async (req, res) => {
   try {
     const userRole = req.userRole || (req.user && req.user.role);
-    if (userRole !== "manager") {
-      return res.status(403).json({ error: "Only manager allowed" });
-    }
+    const userId = req.user.rollNo;
 
     const { month, year } = req.query;
     let where = {};
@@ -355,6 +357,12 @@ exports.getPurchaseHistory = async (req, res) => {
       const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
       const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59, 999);
       where.purchaseDate = { [Op.between]: [startDate, endDate] };
+    }
+
+    if (userRole === "student") {
+      where.StudentRollNo = userId;
+    } else if (userRole !== "manager") {
+      return res.status(403).json({ error: "Unauthorized access" });
     }
 
     const purchases = await ExtraPurchase.findAll({
@@ -371,7 +379,7 @@ exports.getPurchaseHistory = async (req, res) => {
       studentRollNo: p.Student ? p.Student.rollNo : p.StudentRollNo,
       studentName: p.Student ? p.Student.name : "Unknown",
       purchaseDate: p.purchaseDate,
-      itemName: p.ExtraItem ? p.ExtraItem.name : "Unknown",
+      itemName: p.ExtraItem ? p.ExtraItem.name : "Unknown Item",
       itemPrice: p.ExtraItem ? parseFloat(p.ExtraItem.price) : 0,
       quantity: p.quantity,
       totalAmount: parseFloat(p.totalPrice)
