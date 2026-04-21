@@ -31,17 +31,19 @@ export function FeedbackSection() {
         });
         if (res.ok) {
           const data = await res.json();
-          const mapped = data.map((f: any) => ({
-            id: f.id,
-            studentId: f.Student?.rollNo || f.StudentRollNo,
-            studentName: f.Student?.name || f.StudentRollNo,
-            date: f.createdAt,
-            rating: f.rating,
-            category: f.category,
-            message: f.comment || '',
-            status: f.status || 'pending',
-            response: f.response || ''
-          }));
+          const mapped = data
+            .filter((f: any) => f.Student || f.isAnonymous)
+            .map((f: any) => ({
+              id: f.id,
+              studentId: f.Student?.rollNo || f.StudentRollNo,
+              studentName: f.Student?.name || f.StudentRollNo,
+              date: f.createdAt,
+              rating: f.rating,
+              category: f.category,
+              message: f.comment || '',
+              status: f.status || 'pending',
+              response: f.response || ''
+            }));
           setFeedbacks(mapped);
         }
       } catch (err) {

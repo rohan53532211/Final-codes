@@ -581,7 +581,7 @@ export function MenuManagement() {
 
   function renderExtrasManagement() {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 w-250">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-bold">Extra Items Inventory</h3>
           <button
@@ -720,7 +720,7 @@ export function MenuManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-250">
       <h2 className="text-2xl font-bold">Menu Management</h2>
 
       {/* Tabs */}
