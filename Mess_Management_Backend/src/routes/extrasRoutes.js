@@ -11,8 +11,8 @@ const { allowRoles } = require("../middleware/roleMiddleware");
 router.post("/add", protect, allowRoles("manager"), extrasController.addExtraItem);
 router.put("/update/:id", protect, allowRoles("manager"), extrasController.updateExtraItem);
 router.delete("/delete/:id", protect, allowRoles("manager"), extrasController.deleteExtraItem);
-router.get("/analytics", protect, allowRoles("manager"), extrasController.getExtrasAnalytics);
-router.get("/purchases", protect, allowRoles("manager"), extrasController.getPurchaseHistory);
+router.get("/analytics", protect, allowRoles("manager", "student"), extrasController.getExtrasAnalytics);
+router.get("/purchases", protect, allowRoles("manager", "student"), extrasController.getPurchaseHistory);
 
 // student
 router.post("/buy", protect, allowRoles("student"), extrasController.buyExtras);

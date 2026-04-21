@@ -23,6 +23,7 @@ export function ExtraBuyingHistory() {
   const [loadingAnalytics, setLoadingAnalytics] = useState(true);
   const [loadingPurchases, setLoadingPurchases] = useState(true);
   const [errorPurchases, setErrorPurchases] = useState<string | null>(null);
+  const userRole = localStorage.getItem('role');
 
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -126,11 +127,11 @@ export function ExtraBuyingHistory() {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="border-2 border-black p-6">
-          <p className="text-sm text-gray-600 mb-2">Total Revenue</p>
+          <p className="text-sm text-gray-600 mb-2">{userRole === 'manager' ? 'Total Revenue' : 'Total Spent'}</p>
           <p className="text-3xl font-bold">₹{totalRevenue.toFixed(2)}</p>
         </div>
         <div className="border-2 border-black p-6">
-          <p className="text-sm text-gray-600 mb-2">Total Items Sold</p>
+          <p className="text-sm text-gray-600 mb-2">{userRole === 'manager' ? 'Total Items Sold' : 'Total Items Purchased'}</p>
           <p className="text-3xl font-bold">{totalTransactions}</p>
         </div>
         <div className="border-2 border-black p-6">
