@@ -1,194 +1,221 @@
-# Face Recognition For Mess Management System
-A full-stack authentication system that uses OpenCV (LBPH) for face recognition and PostgreSQL for user data management.
+#  Mess Management System with Face Recognition
 
-## Tech Stack
+A polished full-stack mess automation system built for student access, manager approval, and face-based authentication.
 
-### Frontend: 
-React.js, Vite, React-Webcam
-
-### Backend (Manager): 
-Node.js, Express, PG (PostgreSQL driver)
-
-### AI Engine (Brain): 
-Python, FastAPI, OpenCV
-
-### Database: 
-PostgreSQL
-
-## Project Setup
-
-##  Guide to Use
-
-### 1. Clone the Project
-
-```bash
-git clone https://github.com/CS253-Mess-Management/Final-codes.git
-cd Final-codes/
-```
+![Project Banner](https://img.shields.io/badge/Face%20Recognition-OpenCV-blue) ![Tech Stack](https://img.shields.io/badge/Stack-Python%20%7C%20Node%20%7C%20React-yellow) ![DB](https://img.shields.io/badge/Database-PostgreSQL-blueviolet)
 
 ---
 
-##  Start Face Recognition Model (Backend - Python)
+##  What this project does
 
-Make sure you are in the **root directory** of the project.
+This repository combines:
 
-### Install Dependencies
+- **Face recognition login** using Python + OpenCV
+- **React login interface** with webcam capture
+- **Node.js bridge** for image forwarding and authentication
+- **Mess management backend** for student/manager workflows
 
-```bash
-pip install fastapi uvicorn opencv-contrib-python numpy python-multipart pydantic
-```
-
-### Run the Server
-
-```bash
-uvicorn main:app --port 8000 --reload
-```
+The result is a unified system for student registration, manager approval, and secure mess access.
 
 ---
 
-## Start Frontend
+##  Table of Contents
 
-Make sure you are in the **root directory** of the project.
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Repository Structure](#-repository-structure)
+- [Getting Started](#-getting-started)
+- [Configuration](#-configuration)
+- [Run the Services](#-run-the-services)
+- [Database Setup](#-database-setup)
+- [Default Credentials](#-default-credentials)
+- [Workflow](#-workflow)
+- [Important Notes](#-important-notes)
+- [Troubleshooting](#-troubleshooting)
+
+---
+
+##  Features
+
+- Face login via webcam capture
+- Manual email/password login
+- Student registration and manager approval
+- Face profile storage and recognition
+- Mess transactions, menu, feedback, polls, and announcements
+- Email support for notifications
+
+---
+
+##  Architecture
+
+### Modules
+
+- `main.py` — Python FastAPI service for face recognition
+- `server.js` — Root Node.js bridge for face login and registration
+- `Mess_Management_Backend/` — Full mess backend with Express, Sequelize, and PostgreSQL
+- `Mess automation login page/` — React + Vite frontend for login UI
+
+### High-level flow
+
+1. React captures webcam image
+2. Node/Mess backend sends image to Python face service
+3. Python compares face against stored gallery
+4. Backend authenticates and returns login response
+
+---
+
+##  Tech Stack
+
+- **Backend**: Node.js, Express, Sequelize
+- **Face AI**: Python, FastAPI, OpenCV, NumPy
+- **Frontend**: React, Vite, React Webcam
+- **Database**: PostgreSQL
+- **Authentication**: JWT, Bcrypt
+- **Mail**: Nodemailer
+
+---
+
+##  Repository Structure
+
+- `/main.py` — Face recognition API server
+- `/server.js` — Root Node.js bridge
+- `/package.json` — Root Node dependencies
+- `/requirments.txt` — Python dependencies
+- `/Mess automation login page/` — React frontend
+- `/Mess_Management_Backend/` — Mess backend source code
+- `/TrainingImage/` — Training images
+- `/TrainingImageLabel/` — Training labels
+- `/dlib-19.22.99-cp310-cp310-win_amd64.whl` — Windows dlib wheel
+
+---
+
+##  Getting Started
+
+### 1. Start the Python face recognition service
 
 ```bash
-cd "Mess automation login page"
+cd Final-codes
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirments.txt
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Install Dependencies
+### 2. Start the Node.js face bridge
 
 ```bash
+cd Final-codes1
 npm install
+node server.js
 ```
 
-### Run Frontend
+### 3. Start the React frontend
 
 ```bash
+cd Final-codes1/Mess automation login page
+npm install
+npm run dev
+```
+
+### 4. Start the Mess management backend
+
+```bash
+cd Final-codes1/Mess_Management_Backend
+npm install
 npm run dev
 ```
 
 ---
 
-## Start Backend (Node.js)
+##  Configuration
 
-Make sure you are in the **root directory** of the project.
+Create a `.env` file in `Mess_Management_Backend/`:
 
-```bash
-cd Mess_Management_Backend/
-```
-
-### Install Dependencies
-
-```bash
-npm install
-```
-### Create a .env file and the following :
-```
+```env
 PORT=5000
-DB_URL=...
-JWT_SECRET=...
-EMAIL_USER=...
-EMAIL_PASS=...
-```
-### Add dummy data in data base 
-```bash 
-node src/seed.js 
-```
-Manadatory to get approve by manager after new regesteration of new students as this will add a default Manager
-#### Use the following credentials to log in as the Manager:
-```
-email : manager@mess.com
-password : abcd1234
-```
-*NOTE :*
--  Newly registered students cannot log in immediately.
-- A Manager must approve each student before they are allowed access to the system.
-### Run Backend
-
-```bash
-npm run dev
+DB_URL=postgres://USER:PASSWORD@HOST:PORT/DATABASE
+JWT_SECRET=your_jwt_secret
+EMAIL_USER=your_email@example.com
+EMAIL_PASS=your_email_password
+VITE_API_FACE=http://localhost:8000
 ```
 
 ---
 
-##  Notes
+##  Database Setup
 
-* Ensure Python and Node.js are installed.
-* Run all services in separate terminals.
-* Default ports:
+Create a PostgreSQL database named `facereco` and use this schema for the root bridge service:
 
-  * FastAPI: `8000`
-  * Frontend: `5173`
-  * Backend: `5000`
-
-
-### STEP 1 Create datasabe:
-Create a database named facereco and run the following SQL command to create the user table:
-
-#### SQL Code:
+```sql
 CREATE TABLE students (
-    id SERIAL PRIMARY KEY,
-    face_id INTEGER UNIQUE NOT NULL,
-    name VARCHAR(100),
-    email VARCHAR(100),
-    last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id SERIAL PRIMARY KEY,
+  face_id INTEGER UNIQUE NOT NULL,
+  name VARCHAR(100),
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+```
 
-### Step 2 Python Setup:
-Download Requirments , create a virtual environment , start servers
+---
 
-#### Bash Commands 
+## 👤 Default Credentials
 
-Run the commands inside project folder
+The seed script creates a default manager account:
 
-1. python -venv venv
-2. python\scipts\activate
-3. pip install fastapi uvicorn opencv-contrib-python numpy Pilow
-4. start python server: uvicorn main:app --reload --port 8000
+```text
+email: manager@mess.com
+password: abcd1234
+```
 
-### Step 3 Backend Setup:
+> Newly registered students must be approved by a manager before they can log in.
 
-Open a new terminal in parallel
+---
 
-#### Bash Commands:
+##  Workflow
 
-Run the commands inside project folder:
+### Face recognition flow
 
-1. npm install express cors axios pg
-2. start backend server:node server.js
+- React captures the webcam image
+- Backend sends the image to Python
+- Python identifies the face from the gallery
+- Backend returns login status
 
-### Step 4 React Frontend:
+### Mess backend flow
 
-Navigate to the frontend folder(cd frontend) inside the project folder, then run in a new parallel terminal
+- Student registration
+- Manager approval
+- Menu and transaction tracking
+- Feedback and polls
+- Face profile login support
 
-#### Bash commands:
+---
 
-1. npm install react-webcam react-router-dom
-2. Start fontend server: npm run dev
+##  Important Notes
 
+- Run Python, frontend, and backend services in separate terminals
+- Ensure PostgreSQL is running and `.env` is configured
+- Avoid port conflicts: `5000` is used by the mess backend by default
+- Only one app should access the webcam at a time
 
-## Workflow
+---
 
-### Capture: 
-React captures a base64 image and sends it to Node.js (Port 5000).
+##  Troubleshooting
 
-### Recognition:
-Node.js forwards the image to Python (Port 8000).
+- Face login fails if Python service is down
+- Database errors indicate `DB_URL` or PostgreSQL access issues
+- Email failures indicate incorrect `EMAIL_USER`/`EMAIL_PASS`
 
-### Branching Logic
+---
 
-#### Known Face: 
-If the AI recognizes you (e.g., ID 1), Node looks for you in PostgreSQL. If found, it logs you in. If not found in the DB (but known by AI), it auto-appends a record to sync them.
+##  Additional Notes
 
-#### Unknown Face: 
-If the AI doesn't recognize you, Node triggers train_my_face.py locally to start a new training session and adds a new record to the Database.
+- `Mess automation login page/README.md` has frontend-specific setup details
+- The face recognition logic lives in `main.py`
+- The mess backend code lives in `Mess_Management_Backend/src/`
 
-## Important Notes:
+---
 
-Camera Lock: The React webcam must be turned off when train_my_face.py starts, otherwise the Python script will crash (only one app can use the camera at a time).
-
-Ports: 
-* React: 5173
-
-* Node.js: 5000
-
-* Python AI: 8000
+Thanks for using this mess automation system!
